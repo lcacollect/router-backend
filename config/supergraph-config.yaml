@@ -1,0 +1,10 @@
+federation_version: 2
+subgraphs:
+  project:
+    routing_url: "http://localhost:8000/api/graphql"
+    schema:
+      file: /app/schemas/project.graphql
+  documentation:
+    routing_url: "http://localhost:8000/api/graphql"
+    schema:
+      file: /app/schemas/documentation.graphql

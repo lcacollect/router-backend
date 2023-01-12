@@ -1,0 +1,26 @@
+namespace: router
+appName: router
+appDomain: 'api.lcacollect.dk'
+tlsSecret: 'api-lcacollect-dk'
+serviceName: router-service
+servicePort: 4000
+replicas: 1
+secretName: router-secrets
+deployType: 'PROD'
+
+secretStore:
+  name: lcacollect
+  tenantId: ""
+  userAssignedIdentityID: ""
+
+imageKey:
+  registry: lcacollect
+  repository: rover
+  tag: 1
+
+router:
+  imageTag: v0.15.0
+
+clientOrigin: 'http://localhost:5000'
+projectUrl: 'http://localhost:8001'
+documentationUrl: 'http://localhost:8003'

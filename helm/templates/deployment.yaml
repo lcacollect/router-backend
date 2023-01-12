@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.appName }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.appName }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }}
+    spec:
+      volumes:
+        - name: router-config
+          emptyDir:
+            sizeLimit: "64k"
+      {{- if eq .Values.deployType "PROD" }}
+        - name: secrets-store01-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Values.secretName }}
+      {{- end }}
+      initContainers:
+        - name: rover
+          image: "{{.Values.imageKey.registry }}/{{ .Values.imageKey.repository }}:{{ .Values.imageKey.tag }}"
+          volumeMounts:
+            - mountPath: /config
+              name: router-config
+          {{- if eq .Values.deployType "PROD" }}
+            - name: secrets-store01-inline
+              mountPath: "/mnt/secrets"
+              readOnly: true
+          imagePullPolicy: "Always"
+          {{- end}}
+      containers:
+        - name: {{ .Values.appName }}
+          image: "ghcr.io/apollographql/router:{{ .Values.router.imageTag }}"
+          imagePullPolicy: IfNotPresent
+          args:
+            - --hot-reload
+            - --config
+            - /app/router.yaml
+            - --supergraph
+            - /app/supergraph.graphql
+
+          env:
+            - name: PROJECT_URL
+              value: "{{ .Values.projectUrl }}"
+            - name: CLIENT_ORIGIN
+              value: "{{ .Values.clientOrigin }}"
+            - name: DOCUMENTATION_URL
+              value: "{{ .Values.documentationUrl }}"
+
+          ports:
+            - name: http
+              containerPort: 4000
+              protocol: TCP
+
+          livenessProbe:
+            httpGet:
+              path: /.well-known/apollo/server-health
+              port: http
+
+          readinessProbe:
+            httpGet:
+              path: /.well-known/apollo/server-health
+              port: http
+
+          volumeMounts:
+            - name: router-config
+              mountPath: /app

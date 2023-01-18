@@ -20,6 +20,9 @@ manifests:
           imageKey.registry: lcacollect/rover
           imageKey.repository: lcacollect/rover
           imageKey.tag: lcacollect/rover
+        setValueTemplates:
+          secretStore.tenantId: '{{ .AAD_TENANT_ID }}'
+          secretStore.userAssignedIdentityID: '{{ .AAD_APP_CLIENT_ID }}'
         createNamespace: true
 deploy:
   helm: { }

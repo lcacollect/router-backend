@@ -58,7 +58,7 @@ stages:
           inputs:
             buildType: 'specific'
             project: 'LCA Collect'
-            definition: '25'
+            definition: '7'
             buildVersionToDownload: 'latestFromBranch'
             branchName: 'refs/heads/main'
             artifactName: 'project.graphql'
@@ -69,7 +69,7 @@ stages:
           inputs:
             buildType: 'specific'
             project: 'LCA Collect'
-            definition: '26'
+            definition: '8'
             buildVersionToDownload: 'latestFromBranch'
             branchName: 'refs/heads/main'
             artifactName: 'documentation.graphql'

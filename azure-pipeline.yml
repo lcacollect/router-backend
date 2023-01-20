@@ -1,0 +1,107 @@
+trigger:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - ./*
+
+resources:
+  repositories:
+    - repository: self
+    - repository: AzureTemplates
+      type: git
+      name: azure-templates
+
+  pipelines:
+  - pipeline: DocumentationPipeline
+    source: Backend\Documentation
+    trigger:
+      branches:
+        include:
+          - main
+  - pipeline: ProjectPipeline
+    source: Backend\Project
+    trigger:
+      branches:
+        include:
+          - main
+
+
+variables:
+  # Container registry service connection established during pipeline creation
+  imageRepository: 'rover'
+  containerRegistry: 'PLACEHOLDER'
+  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
+  tag: '$(Build.BuildId)'
+  containerRegistryId: 'PLACEHOLDER'
+
+  # Helm registry
+  azureSubscriptionForACR: 'Azure Cloud Connection'
+  azureResourceGroupForACR: 'PLACEHOLDER'
+
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+
+  # Helm Chart
+  chartName: "router"
+  workingDirectory: "helm"
+
+stages:
+- stage: Deploy
+  displayName: Build and Deploy
+  jobs:
+    - job: Build
+      steps:
+        - task: DownloadPipelineArtifact@2
+          displayName: Download project schema 
+          inputs:
+            buildType: 'specific'
+            project: 'LCA Collect'
+            definition: '25'
+            buildVersionToDownload: 'latestFromBranch'
+            branchName: 'refs/heads/main'
+            artifactName: 'project.graphql'
+            targetPath: '$(Build.SourcesDirectory)/schemas/project/'
+            
+        - task: DownloadPipelineArtifact@2
+          displayName: Download documentation schema
+          inputs:
+            buildType: 'specific'
+            project: 'LCA Collect'
+            definition: '26'
+            buildVersionToDownload: 'latestFromBranch'
+            branchName: 'refs/heads/main'
+            artifactName: 'documentation.graphql'
+            targetPath: '$(Build.SourcesDirectory)/schemas/documentation/'
+
+        - task: Docker@2
+          displayName: Build Image
+          inputs:
+            command: build
+            repository: $(imageRepository)
+            dockerfile: $(dockerfilePath)
+            buildContext: "./"
+            containerRegistry: $(containerRegistryId)
+            arguments: --build-arg BUILD_VERSION=$(tag)
+            tags: |
+              $(tag)
+
+        - task: Docker@2
+          displayName: Push Image to Registry
+          inputs:
+            command: push
+            repository: $(imageRepository)
+            containerRegistry: $(containerRegistryId)
+            tags: |
+              $(tag)
+       
+
+    - template: pipelines/helm-deploy.yaml@AzureTemplates
+      parameters:
+        vmImageName: $(vmImageName)
+        azureSubscription: $(azureSubscriptionForACR)
+        containerRegistry: $(containerRegistry)
+        chartName: "router"
+        tag: $(tag)
+        workingDirectory: "helm"

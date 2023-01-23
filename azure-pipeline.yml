@@ -31,14 +31,13 @@ resources:
 variables:
   # Container registry service connection established during pipeline creation
   imageRepository: 'rover'
-  containerRegistry: 'PLACEHOLDER'
+  containerRegistry: 'LCAcollect ACR'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
-  containerRegistryId: 'PLACEHOLDER'
 
   # Helm registry
-  azureSubscriptionForACR: 'Azure Cloud Connection'
-  azureResourceGroupForACR: 'PLACEHOLDER'
+  azureSubscriptionForACR: 'LCAcollect Shared Container Reg'
+  containerRegistryName: lcamolio.azurecr.io
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
@@ -82,7 +81,7 @@ stages:
             repository: $(imageRepository)
             dockerfile: $(dockerfilePath)
             buildContext: "./"
-            containerRegistry: $(containerRegistryId)
+            containerRegistry: $(containerRegistry)
             arguments: --build-arg BUILD_VERSION=$(tag)
             tags: |
               $(tag)
@@ -92,7 +91,7 @@ stages:
           inputs:
             command: push
             repository: $(imageRepository)
-            containerRegistry: $(containerRegistryId)
+            containerRegistry: $(containerRegistry)
             tags: |
               $(tag)
        
@@ -101,7 +100,7 @@ stages:
       parameters:
         vmImageName: $(vmImageName)
         azureSubscription: $(azureSubscriptionForACR)
-        containerRegistry: $(containerRegistry)
+        containerRegistry: $(containerRegistryName)
         chartName: "router"
         tag: $(tag)
         workingDirectory: "helm"

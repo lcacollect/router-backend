@@ -56,7 +56,7 @@ stages:
           displayName: Download project schema 
           inputs:
             buildType: 'specific'
-            project: 'LCA Collect'
+            project: 'LCAcollect'
             definition: '7'
             buildVersionToDownload: 'latestFromBranch'
             branchName: 'refs/heads/main'
@@ -67,7 +67,7 @@ stages:
           displayName: Download documentation schema
           inputs:
             buildType: 'specific'
-            project: 'LCA Collect'
+            project: 'LCAcollect'
             definition: '8'
             buildVersionToDownload: 'latestFromBranch'
             branchName: 'refs/heads/main'

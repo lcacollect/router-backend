@@ -21,12 +21,14 @@ resources:
       branches:
         include:
           - main
+          - stage
   - pipeline: ProjectPipeline
     source: Backend\Project
     trigger:
       branches:
         include:
           - main
+          - stage
 
 
 variables:

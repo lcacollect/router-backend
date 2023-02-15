@@ -36,10 +36,10 @@ variables:
   ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/stage') }}:
     tag: '$(Build.BuildId)-dev'
     artifactBranchName: 'refs/heads/stage'
-  ${{ else if eq(variables['Resources.Pipeline.ProjectPipeline.SourceBranch'], 'refs/heads/stage')}}:
+  ${{ elseif eq(variables['Resources.Pipeline.ProjectPipeline.SourceBranch'], 'refs/heads/stage')}}:
     tag: '$(Build.BuildId)-dev'
     artifactBranchName: 'refs/heads/stage'
-  ${{ else if eq(variables['Resources.Pipeline.DocumentationPipeline.SourceBranch'], 'refs/heads/stage')}}:
+  ${{ elseif eq(variables['Resources.Pipeline.DocumentationPipeline.SourceBranch'], 'refs/heads/stage')}}:
     tag: '$(Build.BuildId)-dev'
     artifactBranchName: 'refs/heads/stage'
   ${{ else }}:

@@ -68,7 +68,7 @@ stages:
             project: 'LCAcollect'
             definition: '7'
             buildVersionToDownload: 'latestFromBranch'
-            branchName: variables['Build.SourceBranch']
+            branchName: $(variables.Build.SourceBranch)
             artifactName: 'project.graphql'
             targetPath: '$(Build.SourcesDirectory)/schemas/project/'
             
@@ -79,7 +79,7 @@ stages:
             project: 'LCAcollect'
             definition: '8'
             buildVersionToDownload: 'latestFromBranch'
-            branchName: variables['Build.SourceBranch']
+            branchName: $(variables.Build.SourceBranch)
             artifactName: 'documentation.graphql'
             targetPath: '$(Build.SourcesDirectory)/schemas/documentation/'
 

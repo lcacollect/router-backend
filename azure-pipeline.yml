@@ -33,10 +33,18 @@ variables:
   imageRepository: 'rover'
   containerRegistry: 'LCAcollect ACR'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
-  ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
-    tag: '$(Build.BuildId)'
-  ${{ else }}:
+  ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/stage') }}:
     tag: '$(Build.BuildId)-dev'
+    artifactBranchName: 'refs/heads/stage'
+  ${{ else if eq(variables['Resources.Pipeline.ProjectPipeline.SourceBranch'], 'refs/heads/stage')}}:
+    tag: '$(Build.BuildId)-dev'
+    artifactBranchName: 'refs/heads/stage'
+  ${{ else if eq(variables['Resources.Pipeline.DocumentationPipeline.SourceBranch'], 'refs/heads/stage')}}:
+    tag: '$(Build.BuildId)-dev'
+    artifactBranchName: 'refs/heads/stage'
+  ${{ else }}:
+    tag: '$(Build.BuildId)'
+    artifactBranchName: 'refs/heads/main'
 
   # Helm registry
   azureSubscriptionForACR: 'LCAcollect Shared Container Reg'
@@ -55,7 +63,7 @@ stages:
   jobs:
     - job: Build
       steps:
-        - script: echo '$(Build.SourceBranch)' && echo $(tag)
+        - script: echo '$(Build.SourceBranch)' && echo $(tag) && echo $(artifactBranchName)
           displayName: Debug
 
         - script: printenv
@@ -68,7 +76,7 @@ stages:
             project: 'LCAcollect'
             definition: '7'
             buildVersionToDownload: 'latestFromBranch'
-            branchName: '$(Build.SourceBranch)'
+            branchName: '$(artifactBranchName)'
             artifactName: 'project.graphql'
             targetPath: '$(Build.SourcesDirectory)/schemas/project/'
             
@@ -79,7 +87,7 @@ stages:
             project: 'LCAcollect'
             definition: '8'
             buildVersionToDownload: 'latestFromBranch'
-            branchName: '$(Build.SourceBranch)'
+            branchName: '$(artifactBranchName)'
             artifactName: 'documentation.graphql'
             targetPath: '$(Build.SourcesDirectory)/schemas/documentation/'
 

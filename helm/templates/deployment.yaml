@@ -62,16 +62,19 @@ spec:
             - name: http
               containerPort: 4000
               protocol: TCP
+            - name: health
+              containerPort: 8088
+              protocol: TCP
 
           livenessProbe:
             httpGet:
-              path: /.well-known/apollo/server-health
-              port: http
+              path: /health
+              port: health
 
           readinessProbe:
             httpGet:
-              path: /.well-known/apollo/server-health
-              port: http
+              path: /health
+              port: health
 
           volumeMounts:
             - name: router-config

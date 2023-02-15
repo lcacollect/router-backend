@@ -1,21 +1,24 @@
-server:
-  endpoint: /graphql
+supergraph:
+  path: /graphql
   listen: 0.0.0.0:4000
-  landing_page: true # playground for the gateway
-  cors:
-    origins: # Specific Origin required with allow credentials set to true.
-      - ${CLIENT_ORIGIN:http://localhost:3000}
-      - https://doc.arkitema.com
-    allow_credentials: true
+homepage:
+  enabled: true # playground for the gateway
+health_check:
+  listen: 0.0.0.0:8088
+cors:
+  origins: # Specific Origin required with allow credentials set to true.
+    - ${env.CLIENT_ORIGIN:-http://localhost:3000}
+    - https://doc.arkitema.com
+  allow_credentials: true
 headers:
   all: # Header rules for all subgraphs
+    request:
     - propagate: # send the following matching headers onwards from the client to all subgraphs
         matching: authorization
     - propagate:
         matching: origin # required for member invitation to indicate platform where invite originates
-plugins:
-  experimental.include_subgraph_errors:
-    all: true
+include_subgraph_errors:
+  all: true
 override_subgraph_url:
-  project: ${PROJECT_URL:http://localhost:5000}
-  documentation: ${DOCUMENTATION_URL:http://localhost:5002}
+  project: ${env.PROJECT_URL:-http://localhost:5000}
+  documentation: ${env.DOCUMENTATION_URL:-http://localhost:5002}

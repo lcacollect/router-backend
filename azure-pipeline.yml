@@ -58,6 +58,9 @@ stages:
         - script: echo '$(Build.SourceBranch)' && echo $(tag)
           displayName: Debug
 
+        - script: printenv
+          displayName: ENV
+
         - task: DownloadPipelineArtifact@2
           displayName: Download project schema 
           inputs:

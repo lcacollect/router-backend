@@ -13,14 +13,14 @@ resources:
 
   pipelines:
   - pipeline: DocumentationPipeline
-    source: Backend\Documentation
+    source: Documentation
     trigger:
       branches:
         include:
           - main
           - stage
   - pipeline: ProjectPipeline
-    source: Backend\Project
+    source: Project
     trigger:
       branches:
         include:

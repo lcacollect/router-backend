@@ -58,7 +58,7 @@ stages:
   jobs:
     - job: Build
       steps:
-        - script: echo '$(Build.SourceBranch)' && echo '$(variables.tag)'
+        - script: echo '$(Build.SourceBranch)' && echo $(tag)
           displayName: Debug
 
         - task: DownloadPipelineArtifact@2

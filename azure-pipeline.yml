@@ -58,7 +58,7 @@ stages:
   jobs:
     - job: Build
       steps:
-        - script: echo $(Build.SourceBranch)
+        - script: echo '$(Build.SourceBranch)'
           displayName: Debug
 
         - task: DownloadPipelineArtifact@2
@@ -106,6 +106,7 @@ stages:
        
 
     - template: pipelines/helm-deploy.yaml@AzureTemplates
+      dependsOn: Build
       parameters:
         vmImageName: $(vmImageName)
         azureSubscription: $(azureSubscriptionForACR)

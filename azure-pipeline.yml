@@ -106,8 +106,8 @@ stages:
        
 
     - template: pipelines/helm-deploy.yaml@AzureTemplates
-      dependsOn: Build
       parameters:
+        dependsOn: Build
         vmImageName: $(vmImageName)
         azureSubscription: $(azureSubscriptionForACR)
         containerRegistry: $(containerRegistryName)

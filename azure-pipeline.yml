@@ -36,7 +36,7 @@ variables:
   imageRepository: 'rover'
   containerRegistry: 'LCAcollect ACR'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
-  ${{ if eq($(Build.SourceBranch), 'refs/heads/main') }}:
+  ${{ if eq('$(Build.SourceBranch)', 'refs/heads/main') }}:
     tag: '$(Build.BuildId)'
   ${{ else }}:
     tag: '$(Build.BuildId)-dev'

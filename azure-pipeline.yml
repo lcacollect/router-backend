@@ -66,7 +66,7 @@ stages:
         - script: echo '$(Build.SourceBranch)' && echo $(tag) && echo $(artifactBranchName)
           displayName: Debug
 
-        - script: echo '$(RESOURCES_PIPELINE_DOCUMENTATIONPIPELINE_SOURCEBRANCH)' && echo '$(Build.Pipeline.SourceBranch)'
+        - script: echo '$(resources.pipeline.ProjectPipeline.sourceBranch)' && echo $(resources.pipeline.ProjectPipeline.sourceBranch)
           displayName: Debug Pipeline
 
         - task: DownloadPipelineArtifact@2

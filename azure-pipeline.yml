@@ -36,7 +36,7 @@ variables:
   imageRepository: 'rover'
   containerRegistry: 'LCAcollect ACR'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
-  ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+  ${{ if eq($(Build.SourceBranch), 'refs/heads/main') }}:
     tag: '$(Build.BuildId)'
   ${{ else }}:
     tag: '$(Build.BuildId)-dev'
@@ -58,6 +58,9 @@ stages:
   jobs:
     - job: Build
       steps:
+        - script: echo $(Build.SourceBranch)
+          displayName: Debug
+
         - task: DownloadPipelineArtifact@2
           displayName: Download project schema 
           inputs:

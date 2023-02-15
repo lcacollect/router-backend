@@ -36,10 +36,10 @@ variables:
   ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/stage') }}:
     tag: '$(Build.BuildId)-dev'
     artifactBranchName: 'refs/heads/stage'
-  ${{ elseif eq($(resources.pipeline.DocumentationPipeline.sourceBranch), 'refs/heads/stage')}}:
+  ${{ elseif eq($[resources.pipeline.DocumentationPipeline.sourceBranch], 'refs/heads/stage')}}:
     tag: '$(Build.BuildId)-dev'
     artifactBranchName: 'refs/heads/stage'
-  ${{ elseif eq($(resources.pipeline.ProjectPipeline.sourceBranch), 'refs/heads/stage')}}:
+  ${{ elseif eq($[resources.pipeline.ProjectPipeline.sourceBranch], 'refs/heads/stage')}}:
     tag: '$(Build.BuildId)-dev'
     artifactBranchName: 'refs/heads/stage'
   ${{ else }}:
@@ -66,7 +66,7 @@ stages:
         - script: echo '$(Build.SourceBranch)' && echo $(tag) && echo $(artifactBranchName)
           displayName: Debug
 
-        - script: echo '$(resources.pipeline.ProjectPipeline.sourceBranch)' && echo $(resources.pipeline.ProjectPipeline.sourceBranch)
+        - script: echo '$(resources.pipeline.ProjectPipeline.sourceBranch)' && echo $(resources.pipeline.DocumentationPipeline.sourceBranch)
           displayName: Debug Pipeline
 
         - task: DownloadPipelineArtifact@2

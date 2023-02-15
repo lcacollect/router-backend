@@ -3,9 +3,6 @@ trigger:
     include:
     - main
     - stage
-  paths:
-    include:
-    - ./*
 
 resources:
   repositories:

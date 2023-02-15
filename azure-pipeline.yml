@@ -58,7 +58,7 @@ stages:
   jobs:
     - job: Build
       steps:
-        - script: echo '$(Build.SourceBranch)'
+        - script: echo '$(Build.SourceBranch)' && echo '$(variables.tag)'
           displayName: Debug
 
         - task: DownloadPipelineArtifact@2
@@ -68,7 +68,7 @@ stages:
             project: 'LCAcollect'
             definition: '7'
             buildVersionToDownload: 'latestFromBranch'
-            branchName: '$(variables.Build.SourceBranch)'
+            branchName: '$(Build.SourceBranch)'
             artifactName: 'project.graphql'
             targetPath: '$(Build.SourcesDirectory)/schemas/project/'
             
@@ -79,7 +79,7 @@ stages:
             project: 'LCAcollect'
             definition: '8'
             buildVersionToDownload: 'latestFromBranch'
-            branchName: '$(variables.Build.SourceBranch)'
+            branchName: '$(Build.SourceBranch)'
             artifactName: 'documentation.graphql'
             targetPath: '$(Build.SourcesDirectory)/schemas/documentation/'
 

@@ -3,9 +3,6 @@ trigger:
     include:
     - main
     - stage
-  paths:
-    include:
-    - ./*
 
 resources:
   repositories:
@@ -16,14 +13,14 @@ resources:
 
   pipelines:
   - pipeline: DocumentationPipeline
-    source: Backend\Documentation
+    source: Documentation
     trigger:
       branches:
         include:
           - main
           - stage
   - pipeline: ProjectPipeline
-    source: Backend\Project
+    source: Project
     trigger:
       branches:
         include:
@@ -36,10 +33,19 @@ variables:
   imageRepository: 'rover'
   containerRegistry: 'LCAcollect ACR'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
-  ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
-    tag: '$(Build.BuildId)'
-  ${{ else }}:
+  ${{ if eq('$(Build.SourceBranch)', 'refs/heads/stage') }}:
     tag: '$(Build.BuildId)-dev'
+    artifactBranchName: 'refs/heads/stage'
+  ${{ elseif eq('$(resources.pipeline.DocumentationPipeline.sourceBranch)', 'refs/heads/stage')}}:
+    tag: '$(Build.BuildId)-dev'
+    artifactBranchName: 'refs/heads/stage'
+  ${{ elseif eq('$(resources.pipeline.ProjectPipeline.sourceBranch)', 'refs/heads/stage')}}:
+    tag: '$(Build.BuildId)-dev'
+    artifactBranchName: 'refs/heads/stage'
+  ${{ else }}:
+    tag: '$(Build.BuildId)'
+    artifactBranchName: 'refs/heads/main'
+    pipelineSourceBranch: '$(resources.pipeline.ProjectPipeline.sourceBranch)'
 
   # Helm registry
   azureSubscriptionForACR: 'LCAcollect Shared Container Reg'
@@ -58,6 +64,12 @@ stages:
   jobs:
     - job: Build
       steps:
+        - script: echo '$(Build.SourceBranch)' && echo $(tag) && echo $(artifactBranchName) && echo $(pipelineSourceBranch)
+          displayName: Debug
+
+        - script: echo '$(resources.pipeline.ProjectPipeline.sourceBranch)' && echo $(resources.pipeline.DocumentationPipeline.sourceBranch)
+          displayName: Debug Pipeline
+
         - task: DownloadPipelineArtifact@2
           displayName: Download project schema 
           inputs:
@@ -65,7 +77,7 @@ stages:
             project: 'LCAcollect'
             definition: '7'
             buildVersionToDownload: 'latestFromBranch'
-            branchName: variables['Build.SourceBranch']
+            branchName: '$(artifactBranchName)'
             artifactName: 'project.graphql'
             targetPath: '$(Build.SourcesDirectory)/schemas/project/'
             
@@ -76,7 +88,7 @@ stages:
             project: 'LCAcollect'
             definition: '8'
             buildVersionToDownload: 'latestFromBranch'
-            branchName: variables['Build.SourceBranch']
+            branchName: '$(artifactBranchName)'
             artifactName: 'documentation.graphql'
             targetPath: '$(Build.SourcesDirectory)/schemas/documentation/'
 
@@ -92,21 +104,22 @@ stages:
             tags: |
               $(tag)
 
-        - task: Docker@2
-          displayName: Push Image to Registry
-          inputs:
-            command: push
-            repository: $(imageRepository)
-            containerRegistry: $(containerRegistry)
-            tags: |
-              $(tag)
-       
-
-    - template: pipelines/helm-deploy.yaml@AzureTemplates
-      parameters:
-        vmImageName: $(vmImageName)
-        azureSubscription: $(azureSubscriptionForACR)
-        containerRegistry: $(containerRegistryName)
-        chartName: "router"
-        tag: $(tag)
-        workingDirectory: "helm"
+#        - task: Docker@2
+#          displayName: Push Image to Registry
+#          inputs:
+#            command: push
+#            repository: $(imageRepository)
+#            containerRegistry: $(containerRegistry)
+#            tags: |
+#              $(tag)
+#
+#
+#    - template: pipelines/helm-deploy.yaml@AzureTemplates
+#      parameters:
+#        dependsOn: Build
+#        vmImageName: $(vmImageName)
+#        azureSubscription: $(azureSubscriptionForACR)
+#        containerRegistry: $(containerRegistryName)
+#        chartName: "router"
+#        tag: $(tag)
+#        workingDirectory: "helm"

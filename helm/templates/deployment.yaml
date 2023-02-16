@@ -57,21 +57,30 @@ spec:
               value: "{{ .Values.clientOrigin }}"
             - name: DOCUMENTATION_URL
               value: "{{ .Values.documentationUrl }}"
+            - name: ENABLE_INTROSPECTION
+              {{- if eq .Values.deployType "DEV" }}
+              value: "true"
+              {{- else}}
+              value: "false"
+              {{- end}}
 
           ports:
             - name: http
               containerPort: 4000
               protocol: TCP
+            - name: health
+              containerPort: 8088
+              protocol: TCP
 
           livenessProbe:
             httpGet:
-              path: /.well-known/apollo/server-health
-              port: http
+              path: /health
+              port: health
 
           readinessProbe:
             httpGet:
-              path: /.well-known/apollo/server-health
-              port: http
+              path: /health
+              port: health
 
           volumeMounts:
             - name: router-config

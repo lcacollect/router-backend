@@ -74,7 +74,7 @@ stages:
           displayName: Download project schema 
           inputs:
             buildType: 'specific'
-            project: 'LCAcollect'
+            project: 'MolioLCAcollect'
             definition: '8'
             buildVersionToDownload: 'latestFromBranch'
             branchName: '$(artifactBranchName)'
@@ -85,7 +85,7 @@ stages:
           displayName: Download documentation schema
           inputs:
             buildType: 'specific'
-            project: 'LCAcollect'
+            project: 'MolioLCAcollect'
             definition: '7'
             buildVersionToDownload: 'latestFromBranch'
             branchName: '$(artifactBranchName)'

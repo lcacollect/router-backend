@@ -75,7 +75,7 @@ stages:
           inputs:
             buildType: 'specific'
             project: 'LCAcollect'
-            definition: '7'
+            definition: '8'
             buildVersionToDownload: 'latestFromBranch'
             branchName: '$(artifactBranchName)'
             artifactName: 'project.graphql'
@@ -86,7 +86,7 @@ stages:
           inputs:
             buildType: 'specific'
             project: 'LCAcollect'
-            definition: '8'
+            definition: '7'
             buildVersionToDownload: 'latestFromBranch'
             branchName: '$(artifactBranchName)'
             artifactName: 'documentation.graphql'

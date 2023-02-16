@@ -45,7 +45,7 @@ variables:
   ${{ else }}:
     tag: '$(Build.BuildId)'
     artifactBranchName: 'refs/heads/main'
-    pipelineSourceBranch: ''$(resources.pipeline.ProjectPipeline.sourceBranch)'
+    pipelineSourceBranch: '$(resources.pipeline.ProjectPipeline.sourceBranch)'
 
   # Helm registry
   azureSubscriptionForACR: 'LCAcollect Shared Container Reg'

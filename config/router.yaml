@@ -1,6 +1,7 @@
 supergraph:
   path: /graphql
   listen: 0.0.0.0:4000
+  introspection: ${env.ENABLE_INTROSPECTION:-false}
 homepage:
   enabled: true # playground for the gateway
 health_check:

@@ -104,22 +104,22 @@ stages:
             tags: |
               $(tag)
 
-        - task: Docker@2
-          displayName: Push Image to Registry
-          inputs:
-            command: push
-            repository: $(imageRepository)
-            containerRegistry: $(containerRegistry)
-            tags: |
-              $(tag)
-       
-
-    - template: pipelines/helm-deploy.yaml@AzureTemplates
-      parameters:
-        dependsOn: Build
-        vmImageName: $(vmImageName)
-        azureSubscription: $(azureSubscriptionForACR)
-        containerRegistry: $(containerRegistryName)
-        chartName: "router"
-        tag: $(tag)
-        workingDirectory: "helm"
+#        - task: Docker@2
+#          displayName: Push Image to Registry
+#          inputs:
+#            command: push
+#            repository: $(imageRepository)
+#            containerRegistry: $(containerRegistry)
+#            tags: |
+#              $(tag)
+#
+#
+#    - template: pipelines/helm-deploy.yaml@AzureTemplates
+#      parameters:
+#        dependsOn: Build
+#        vmImageName: $(vmImageName)
+#        azureSubscription: $(azureSubscriptionForACR)
+#        containerRegistry: $(containerRegistryName)
+#        chartName: "router"
+#        tag: $(tag)
+#        workingDirectory: "helm"

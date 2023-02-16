@@ -45,6 +45,7 @@ variables:
   ${{ else }}:
     tag: '$(Build.BuildId)'
     artifactBranchName: 'refs/heads/main'
+    pipelineSourceBranch: variables['resources.pipeline.ProjectPipeline.sourceBranch']
 
   # Helm registry
   azureSubscriptionForACR: 'LCAcollect Shared Container Reg'
@@ -63,7 +64,7 @@ stages:
   jobs:
     - job: Build
       steps:
-        - script: echo '$(Build.SourceBranch)' && echo $(tag) && echo $(artifactBranchName)
+        - script: echo '$(Build.SourceBranch)' && echo $(tag) && echo $(artifactBranchName) && echo $(pipelineSourceBranch)
           displayName: Debug
 
         - script: echo '$(resources.pipeline.ProjectPipeline.sourceBranch)' && echo $(resources.pipeline.DocumentationPipeline.sourceBranch)

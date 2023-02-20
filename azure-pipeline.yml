@@ -136,12 +136,40 @@ stages:
               $(setEnvironment.tag)
 
 
-    - template: pipelines/helm-deploy.yaml@AzureTemplates
-      parameters:
-        dependsOn: Build
-        vmImageName: $(vmImageName)
-        azureSubscription: $(azureSubscriptionForACR)
-        containerRegistry: $(containerRegistryName)
-        chartName: "router"
-        tag: $(dependencies.Build.outputs['setEnvironment.tag'])
-        workingDirectory: "helm"
+    - job: Deploy
+      displayName: "Deploy Helm Chart"
+      dependsOn: Build
+      pool:
+        vmImage: $(vmImageName)
+      variables:
+        - group: azureVariables
+          tag: $[dependencies.Build.outputs['setEnvironment.tag'])
+          helmVersion: "3.9.2"
+          chartName: router
+          workingDirectory: "helm"
+      steps:
+        - task: HelmInstaller@0
+          inputs:
+            helmVersion: $(helmVersion)
+            installKubectl: true
+        - task: AzureCLI@2
+          env:
+            REGISTRY_PASSWORD: $(acr-credentials)
+            HELM_EXPERIMENTAL_OCI: 1
+          inputs:
+            scriptType: bash
+            azureSubscription: $(azureSubscriptionForACR)
+            scriptLocation: 'inlineScript'
+            inlineScript: |
+              echo $REGISTRY_PASSWORD | helm registry login $(containerRegistryName) --username $(acr-username) --password-stdin
+        - script: helm template $(chartName) .
+          displayName: Render helm chart
+          workingDirectory: $(workingDirectory)
+        - script: helm package --version 1.0.$(tag) .
+          displayName: Package helm chart
+          workingDirectory: $(workingDirectory)
+        - script: helm push $(chartName)-1.0.$(tag).tgz oci://$(containerRegistryName)/helm
+          displayName: Push helm chart
+          env:
+            HELM_EXPERIMENTAL_OCI: 1
+          workingDirectory: $(workingDirectory)

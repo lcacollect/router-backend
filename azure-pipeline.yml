@@ -86,7 +86,7 @@ stages:
           displayName: Set Environment
           name: setEnvironment
 
-        - script: echo '$(Build.SourceBranch)' && echo $(tag) && echo $(artifactBranchName)
+        - script: echo '$(Build.SourceBranch)' && echo $(setEnvironment.tag) && echo $(artifactBranchName)
           displayName: Debug
 
         - script: echo '$(resources.pipeline.ProjectPipeline.sourceBranch)' && echo $(resources.pipeline.DocumentationPipeline.sourceBranch)
@@ -124,7 +124,7 @@ stages:
             containerRegistry: $(containerRegistry)
             arguments: --build-arg BUILD_VERSION=$(tag)
             tags: |
-              $(tag)
+              $(setEnvironment.tag)
 
         - task: Docker@2
           displayName: Push Image to Registry
@@ -133,7 +133,7 @@ stages:
             repository: $(imageRepository)
             containerRegistry: $(containerRegistry)
             tags: |
-              $(tag)
+              $(setEnvironment.tag)
 
 
     - template: pipelines/helm-deploy.yaml@AzureTemplates

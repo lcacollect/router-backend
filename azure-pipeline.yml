@@ -67,25 +67,26 @@ stages:
         - script: |
             if [ $(Build.SourceBranch) = "refs/heads/stage" ]; then
               echo "##vso[task.setvariable variable=artifactBranchName;]refs/heads/stage"
-              echo "##vso[task.setvariable variable=tag;]'$(Build.BuildId)-dev'"
+              echo "##vso[task.setvariable variable=tag;isOutput=true]'$(Build.BuildId)-dev'"
             elif [ $(Build.Reason) = ResourceTrigger ]; then
               if [ $(resources.pipeline.ProjectPipeline.sourceBranch) = "refs/heads/stage" ]; then
                 echo "##vso[task.setvariable variable=artifactBranchName;]refs/heads/stage"
-                echo "##vso[task.setvariable variable=tag;]'$(Build.BuildId)-dev'"
+                echo "##vso[task.setvariable variable=tag;isOutput=true]'$(Build.BuildId)-dev'"
               elif [ $(resources.pipeline.DocumentationPipeline.sourceBranch) = "refs/heads/stage" ]; then
                 echo "##vso[task.setvariable variable=artifactBranchName;]refs/heads/stage"
-                echo "##vso[task.setvariable variable=tag;]'$(Build.BuildId)-dev'"
+                echo "##vso[task.setvariable variable=tag;isOutput=true]'$(Build.BuildId)-dev'"
               else
                 echo "##vso[task.setvariable variable=artifactBranchName;]refs/heads/main"
-                echo "##vso[task.setvariable variable=tag;]$(Build.BuildId)"
+                echo "##vso[task.setvariable variable=tag;isOutput=true]$(Build.BuildId)"
               fi
             else
               echo "##vso[task.setvariable variable=artifactBranchName;]refs/heads/main"
-              echo "##vso[task.setvariable variable=tag;]$(Build.BuildId)"
+              echo "##vso[task.setvariable variable=tag;isOutput=true]$(Build.BuildId)"
             fi
           displayName: Set Environment
+          name: setEnvironment
 
-        - script: echo '$(Build.SourceBranch)' && echo $(tag) && echo $(artifactBranchName) && echo $(pipelineSourceBranch)
+        - script: echo '$(Build.SourceBranch)' && echo $(tag) && echo $(artifactBranchName)
           displayName: Debug
 
         - script: echo '$(resources.pipeline.ProjectPipeline.sourceBranch)' && echo $(resources.pipeline.DocumentationPipeline.sourceBranch)
@@ -142,5 +143,5 @@ stages:
         azureSubscription: $(azureSubscriptionForACR)
         containerRegistry: $(containerRegistryName)
         chartName: "router"
-        tag: $(tag)
+        tag: $[ dependencies.Build.outputs['setEnvironment.tag'] ]
         workingDirectory: "helm"

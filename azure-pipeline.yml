@@ -142,11 +142,11 @@ stages:
       pool:
         vmImage: $(vmImageName)
       variables:
-        - group: azureVariables
-          tag: $[dependencies.Build.outputs['setEnvironment.tag'])
-          helmVersion: "3.9.2"
-          chartName: router
-          workingDirectory: "helm"
+        tag: $[dependencies.Build.outputs['setEnvironment.tag'])
+        helmVersion: "3.9.2"
+        chartName: router
+        workingDirectory: "helm"
+        group: azureVariables
       steps:
         - task: HelmInstaller@0
           inputs:

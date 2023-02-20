@@ -143,5 +143,5 @@ stages:
         azureSubscription: $(azureSubscriptionForACR)
         containerRegistry: $(containerRegistryName)
         chartName: "router"
-        tag: $[ dependencies.Build.outputs['setEnvironment.tag'] ]
+        tag: $(dependencies.Build.outputs['setEnvironment.tag'])
         workingDirectory: "helm"

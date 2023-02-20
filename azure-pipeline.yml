@@ -67,14 +67,14 @@ stages:
         - script: |
             if [ $(Build.SourceBranch) = "refs/heads/stage" ]; then
               echo "##vso[task.setvariable variable=artifactBranchName;]refs/heads/stage"
-              echo "##vso[task.setvariable variable=tag;isoutput=true]'$(Build.BuildId)-dev'"
+              echo "##vso[task.setvariable variable=tag;isoutput=true]$(Build.BuildId)-dev"
             elif [ $(Build.Reason) = ResourceTrigger ]; then
               if [ $(resources.pipeline.ProjectPipeline.sourceBranch) = "refs/heads/stage" ]; then
                 echo "##vso[task.setvariable variable=artifactBranchName;]refs/heads/stage"
-                echo "##vso[task.setvariable variable=tag;isoutput=true]'$(Build.BuildId)-dev'"
+                echo "##vso[task.setvariable variable=tag;isoutput=true]$(Build.BuildId)-dev"
               elif [ $(resources.pipeline.DocumentationPipeline.sourceBranch) = "refs/heads/stage" ]; then
                 echo "##vso[task.setvariable variable=artifactBranchName;]refs/heads/stage"
-                echo "##vso[task.setvariable variable=tag;isoutput=true]'$(Build.BuildId)-dev'"
+                echo "##vso[task.setvariable variable=tag;isoutput=true]$(Build.BuildId)-dev"
               else
                 echo "##vso[task.setvariable variable=artifactBranchName;]refs/heads/main"
                 echo "##vso[task.setvariable variable=tag;isoutput=true]$(Build.BuildId)"

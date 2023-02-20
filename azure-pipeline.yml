@@ -33,19 +33,19 @@ variables:
   imageRepository: 'rover'
   containerRegistry: 'LCAcollect ACR'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
-  ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/stage') }}:
-    tag: '$(Build.BuildId)-dev'
-    artifactBranchName: 'refs/heads/stage'
-  ${{ elseif eq(variables['resources.pipeline.DocumentationPipeline.sourceBranch'], 'refs/heads/stage') }}:
-    tag: '$(Build.BuildId)-dev'
-    artifactBranchName: 'refs/heads/stage'
-  ${{ elseif eq(variables['resources.pipeline.ProjectPipeline.sourceBranch'], 'refs/heads/stage') }}:
-    tag: '$(Build.BuildId)-dev'
-    artifactBranchName: 'refs/heads/stage'
-  ${{ else }}:
-    tag: '$(Build.BuildId)'
-    artifactBranchName: 'refs/heads/main'
-    pipelineSourceBranch: '$(resources.pipeline.ProjectPipeline.sourceBranch)'
+#  ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/stage') }}:
+#    tag: '$(Build.BuildId)-dev'
+#    artifactBranchName: 'refs/heads/stage'
+#  ${{ elseif eq(variables['resources.pipeline.DocumentationPipeline.sourceBranch'], 'refs/heads/stage') }}:
+#    tag: '$(Build.BuildId)-dev'
+#    artifactBranchName: 'refs/heads/stage'
+#  ${{ elseif eq(variables['resources.pipeline.ProjectPipeline.sourceBranch'], 'refs/heads/stage') }}:
+#    tag: '$(Build.BuildId)-dev'
+#    artifactBranchName: 'refs/heads/stage'
+#  ${{ else }}:
+#    tag: '$(Build.BuildId)'
+#    artifactBranchName: 'refs/heads/main'
+#    pipelineSourceBranch: '$(resources.pipeline.ProjectPipeline.sourceBranch)'
 
   # Helm registry
   azureSubscriptionForACR: 'LCAcollect Shared Container Reg'
@@ -64,6 +64,27 @@ stages:
   jobs:
     - job: Build
       steps:
+        - script: |
+            if [ $(Build.SourceBranch) = "refs/heads/stage" ]; then
+              echo "##vso[task.setvariable variable=artifactBranchName;]refs/heads/stage"
+              echo "##vso[task.setvariable variable=tag;]'$(Build.BuildId)-dev'"
+            elif [ $(Build.Reason) = ResourceTrigger ]; then
+              if [ $(resources.pipeline.ProjectPipeline.sourceBranch) = "refs/heads/stage" ]; then
+                echo "##vso[task.setvariable variable=artifactBranchName;]refs/heads/stage"
+                echo "##vso[task.setvariable variable=tag;]'$(Build.BuildId)-dev'"
+              elif [ $(resources.pipeline.DocumentationPipeline.sourceBranch) = "refs/heads/stage" ]; then
+                echo "##vso[task.setvariable variable=artifactBranchName;]refs/heads/stage"
+                echo "##vso[task.setvariable variable=tag;]'$(Build.BuildId)-dev'"
+              else
+                echo "##vso[task.setvariable variable=artifactBranchName;]refs/heads/main"
+                echo "##vso[task.setvariable variable=tag;]$(Build.BuildId)"
+              fi
+            else
+              echo "##vso[task.setvariable variable=artifactBranchName;]refs/heads/main"
+              echo "##vso[task.setvariable variable=tag;]$(Build.BuildId)"
+            fi
+          displayName: Set Environment
+
         - script: echo '$(Build.SourceBranch)' && echo $(tag) && echo $(artifactBranchName) && echo $(pipelineSourceBranch)
           displayName: Debug
 

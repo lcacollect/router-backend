@@ -143,7 +143,7 @@ stages:
         vmImage: $(vmImageName)
       variables:
         - name: tag
-          value: $[dependencies.Build.outputs['setEnvironment.tag'])
+          value: $[ dependencies.Build.outputs['setEnvironment.tag'] ]
         - name: helmVersion
           value: "3.9.2"
         - name: chartName

@@ -58,11 +58,7 @@ spec:
             - name: DOCUMENTATION_URL
               value: "{{ .Values.documentationUrl }}"
             - name: ENABLE_INTROSPECTION
-              {{- if eq .Values.deployType "DEV" }}
               value: "true"
-              {{- else}}
-              value: "false"
-              {{- end}}
 
           ports:
             - name: http

@@ -1,0 +1,48 @@
+name: Container CI/CD Workflow
+
+on:
+  push:
+    branches:
+      - main
+      - stage
+  pull_request:
+    branches:
+      - main
+      - stage
+  workflow_dispatch:
+
+jobs:
+  download-graphql:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Create Folders
+        run: |
+          mkdir -p schemas/project
+          mkdir -p schemas/documentation
+
+      - name: Download from Azure
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az storage blob download --sas-token ${{ secrets.AZURE_CREDENTIALS }} --account-name ${{ vars.PRODUCTION_STORAGE_ACCOUNT }} --container-name ${{ vars.GRAPHQL_CONTAINER_NAME }} --name "project/${{ github.ref_name }}/schema.graphql" --file schemas/project/schema.graphql
+            az storage blob download --sas-token ${{ secrets.AZURE_CREDENTIALS }} --account-name ${{ vars.PRODUCTION_STORAGE_ACCOUNT }} --container-name ${{ vars.GRAPHQL_CONTAINER_NAME }} --name "documentation/${{ github.ref_name }}/schema.graphql" --file schemas/documentation/schema.graphql
+
+  build-container:
+    uses: lcacollect/.github/.github/workflows/build-image.yaml@main
+    needs: download-graphql
+    with:
+      tag: "${{ github.run_number }}${{ (github.ref_name != 'main' && '-dev') || ''}}"
+      registry: "lcacollect"
+      name: 'rover'
+  publish-chart:
+    if: github.event_name != 'pull_request'
+    uses: lcacollect/.github/.github/workflows/publish-chart.yaml@main
+    needs:
+      - download-graphql
+      - build-container
+    with:
+      tag: "${{ github.run_number }}${{ (github.ref_name != 'main' && '-dev') || ''}}"
+      registry: "lcacollect"
+      name: 'router'

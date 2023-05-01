@@ -11,6 +11,8 @@ on:
       - stage
   workflow_dispatch:
   repository_dispatch:
+    types:
+      - workflow_completed
 
 jobs:
   test-dispatch:
@@ -45,7 +47,7 @@ jobs:
             az storage blob download --sas-token ${{ secrets.AZURE_CREDENTIALS }} --account-name ${{ vars.PRODUCTION_STORAGE_ACCOUNT }} --container-name ${{ vars.GRAPHQL_CONTAINER_NAME }} --name "project/${{ github.ref_name }}/schema.graphql" --file schemas/project/schema.graphql
             az storage blob download --sas-token ${{ secrets.AZURE_CREDENTIALS }} --account-name ${{ vars.PRODUCTION_STORAGE_ACCOUNT }} --container-name ${{ vars.GRAPHQL_CONTAINER_NAME }} --name "documentation/${{ github.ref_name }}/schema.graphql" --file schemas/documentation/schema.graphql
 
-      - name: Log into registry ${{ env.registry }}
+      - name: Log into LCAcollect registry
         uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
         with:
           registry: ghcr.io/${{ env.registry }}

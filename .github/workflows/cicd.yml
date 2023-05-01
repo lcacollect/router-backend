@@ -10,8 +10,13 @@ on:
       - main
       - stage
   workflow_dispatch:
+  repository_dispatch:
 
 jobs:
+  test-dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ${{ toJSON(github.event) }}
   download-graphql:
     runs-on: ubuntu-latest
     steps:

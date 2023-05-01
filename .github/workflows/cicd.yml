@@ -62,7 +62,6 @@ jobs:
     if: github.event_name != 'pull_request'
     uses: lcacollect/.github/.github/workflows/publish-chart.yaml@main
     needs:
-      - download-graphql
       - build-container
     with:
       tag: "${{ github.run_number }}${{ (github.ref_name != 'main' && '-dev') || ''}}"

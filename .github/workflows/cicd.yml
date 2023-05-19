@@ -15,11 +15,6 @@ on:
       - workflow_completed
 
 jobs:
-  test-dispatch:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "${{ toJSON(github.event) }}"
-
   build-container:
     name: Build and Push Image
     runs-on: ubuntu-latest

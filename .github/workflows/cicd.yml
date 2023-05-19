@@ -39,6 +39,7 @@ jobs:
         run: |
           mkdir -p schemas/project
           mkdir -p schemas/documentation
+          mkdir -p schemas/assembly
 
       - name: Download from Azure
         uses: azure/CLI@v1

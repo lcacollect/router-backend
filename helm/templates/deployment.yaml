@@ -57,6 +57,8 @@ spec:
               value: "{{ .Values.clientOrigin }}"
             - name: DOCUMENTATION_URL
               value: "{{ .Values.documentationUrl }}"
+            - name: ASSEMBLY_URL
+              value: "{{ .Values.assemblyUrl }}"
             - name: ENABLE_INTROSPECTION
               value: "true"
 

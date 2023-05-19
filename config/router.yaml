@@ -9,7 +9,6 @@ health_check:
 cors:
   origins: # Specific Origin required with allow credentials set to true.
     - ${env.CLIENT_ORIGIN:-http://localhost:3000}
-    - https://doc.arkitema.com
   allow_credentials: true
 headers:
   all: # Header rules for all subgraphs
@@ -22,4 +21,6 @@ include_subgraph_errors:
   all: true
 override_subgraph_url:
   project: ${env.PROJECT_URL:-http://localhost:5000}
+  assembly: ${env.ASSEMBLY_URL:-http://localhost:5001}
   documentation: ${env.DOCUMENTATION_URL:-http://localhost:5002}
+

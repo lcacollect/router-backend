@@ -20,6 +20,7 @@ RUN chmod +x /app/build_graph.sh
 # Copy GraphQL schemas from services
 COPY --chown=rover:rover ./schemas/project/schema.graphql /app/schemas/project.graphql
 COPY --chown=rover:rover ./schemas/documentation/schema.graphql /app/schemas/documentation.graphql
+COPY --chown=rover:rover ./schemas/assembly/schema.graphql /app/schemas/assembly.graphql
 
 # Add Rover to PATH
 ENV PATH=/app/.rover/bin:$PATH

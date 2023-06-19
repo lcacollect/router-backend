@@ -23,4 +23,5 @@ router:
 
 clientOrigin: 'http://localhost:5000'
 projectUrl: 'http://localhost:8001'
+assemblyUrl: 'http://localhost:8002'
 documentationUrl: 'http://localhost:8003'

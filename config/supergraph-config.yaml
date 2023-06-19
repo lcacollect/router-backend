@@ -8,3 +8,7 @@ subgraphs:
     routing_url: "http://localhost:8000/api/graphql"
     schema:
       file: /app/schemas/documentation.graphql
+  assembly:
+    routing_url: "http://localhost:8000/api/graphql"
+    schema:
+      file: /app/schemas/assembly.graphql

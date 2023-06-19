@@ -1,0 +1,68 @@
+name: Container CI/CD Workflow
+
+on:
+  push:
+    branches:
+      - main
+      - stage
+  pull_request:
+    branches:
+      - main
+      - stage
+  workflow_dispatch:
+  repository_dispatch:
+    types:
+      - workflow_completed
+
+jobs:
+  build-container:
+    name: Build and Push Image
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    env:
+      registry: 'lcacollect'
+      name: 'rover'
+      tag: "${{ github.run_number }}${{ (github.ref_name != 'main' && '-dev') || ''}}"
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Create Folders
+        run: |
+          mkdir -p schemas/project
+          mkdir -p schemas/documentation
+          mkdir -p schemas/assembly
+
+      - name: Download from Azure
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az storage blob download --sas-token ${{ secrets.AZURE_CREDENTIALS }} --account-name ${{ vars.PRODUCTION_STORAGE_ACCOUNT }} --container-name ${{ vars.GRAPHQL_CONTAINER_NAME }} --name "project/${{ github.ref_name }}/schema.graphql" --file schemas/project/schema.graphql
+            az storage blob download --sas-token ${{ secrets.AZURE_CREDENTIALS }} --account-name ${{ vars.PRODUCTION_STORAGE_ACCOUNT }} --container-name ${{ vars.GRAPHQL_CONTAINER_NAME }} --name "documentation/${{ github.ref_name }}/schema.graphql" --file schemas/documentation/schema.graphql
+            az storage blob download --sas-token ${{ secrets.AZURE_CREDENTIALS }} --account-name ${{ vars.PRODUCTION_STORAGE_ACCOUNT }} --container-name ${{ vars.GRAPHQL_CONTAINER_NAME }} --name "assembly/${{ github.ref_name }}/schema.graphql" --file schemas/assembly/schema.graphql
+
+      - name: Log into LCAcollect registry
+        uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
+        with:
+          registry: ghcr.io/${{ env.registry }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Image
+        run: docker build -t ghcr.io/${{ env.registry }}/${{ env.name }}:${{ env.tag }} .
+
+      - name: Push Image
+        run: docker push ghcr.io/${{ env.registry }}/${{ env.name }}:${{ env.tag }}
+
+  publish-chart:
+    if: github.event_name != 'pull_request'
+    uses: lcacollect/.github/.github/workflows/publish-chart.yaml@main
+    needs:
+      - build-container
+    with:
+      tag: "${{ github.run_number }}${{ (github.ref_name != 'main' && '-dev') || ''}}"
+      registry: "lcacollect"
+      name: 'router'

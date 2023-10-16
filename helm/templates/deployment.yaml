@@ -62,6 +62,9 @@ spec:
             - name: ENABLE_INTROSPECTION
               value: "true"
 
+            - name: APOLLO_ROUTER_LOG
+              value: {{ .Values.router.logLevel }}
+
           ports:
             - name: http
               containerPort: 4000

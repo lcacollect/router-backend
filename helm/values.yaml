@@ -20,6 +20,7 @@ imageKey:
 
 router:
   imageTag: v1.10.3
+  logLevel: info
 
 clientOrigin: 'http://localhost:5000'
 projectUrl: 'http://localhost:8001'

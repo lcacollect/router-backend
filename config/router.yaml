@@ -1,11 +1,9 @@
 supergraph:
   path: /graphql
   listen: 0.0.0.0:4000
-  introspection: ${env.ENABLE_INTROSPECTION:-true}
-sandbox:
-  enabled: true # sandbox environment for the gateway
+  introspection: ${env.ENABLE_INTROSPECTION:-false}
 homepage:
-  enabled: false # playground for the gateway
+  enabled: true # playground for the gateway
 health_check:
   listen: 0.0.0.0:8088
 cors:
